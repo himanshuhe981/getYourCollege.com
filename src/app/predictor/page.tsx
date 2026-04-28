@@ -28,25 +28,24 @@ export default function PredictorPage() {
   const exams = ['JEE Main', 'JEE Advanced', 'BITSAT', 'VITEEE', 'MET', 'WBJEE']
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white pb-24">
-      {/* Top Navigation */}
-      <header className="border-b border-black/10 py-6 px-8 md:px-24 sticky top-0 bg-white/80 backdrop-blur-md z-40 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider hover:text-black/60 transition-colors">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Discover
-        </Link>
-      </header>
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-slate-900 selection:text-white pb-24">
+      <main className="max-w-screen-xl mx-auto px-6 md:px-16 mt-12 md:mt-16">
+        <div className="mb-12">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-500 hover:text-slate-900 transition-colors bg-white px-4 py-2 rounded-full shadow-sm border border-white">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Discover
+          </Link>
+        </div>
 
-      <main className="max-w-screen-xl mx-auto px-8 md:px-24 mt-16 md:mt-24">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           
           {/* Input Section */}
           <div className="lg:col-span-1">
-            <div className="sticky top-32 border border-black/10 p-8 bg-black/5">
-              <h1 className="text-4xl font-bold tracking-tighter leading-[0.9] mb-4">
+            <div className="sticky top-32 border border-white bg-white/60 backdrop-blur-md rounded-[2rem] p-8 shadow-sm">
+              <h1 className="text-4xl font-bold tracking-tight leading-none mb-6 text-slate-900">
                 Predictor.
               </h1>
-              <p className="text-black/60 font-medium mb-8 leading-relaxed">
+              <p className="text-slate-500 font-medium mb-8 leading-relaxed">
                 Enter your expected exam rank to see which colleges you might qualify for based on past cutoffs.
               </p>
 

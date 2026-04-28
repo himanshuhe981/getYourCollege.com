@@ -27,29 +27,28 @@ export default function ComparePage() {
   }, [selectedCollegeIds])
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white pb-24">
-      {/* Top Navigation */}
-      <header className="border-b border-black/10 py-6 px-8 md:px-24 sticky top-0 bg-white/80 backdrop-blur-md z-40 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider hover:text-black/60 transition-colors">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Discover
-        </Link>
-        {colleges.length > 0 && (
-          <button 
-            onClick={() => clear()}
-            className="text-xs uppercase font-bold tracking-widest text-black/50 hover:text-black transition-colors"
-          >
-            Clear All
-          </button>
-        )}
-      </header>
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-slate-900 selection:text-white pb-24">
+      <main className="max-w-screen-xl mx-auto px-6 md:px-16 mt-12 md:mt-16">
+        <div className="flex items-center justify-between mb-12">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-500 hover:text-slate-900 transition-colors bg-white px-4 py-2 rounded-full shadow-sm border border-white">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Discover
+          </Link>
+          {colleges.length > 0 && (
+            <button 
+              onClick={() => clear()}
+              className="text-xs uppercase font-bold tracking-widest text-slate-500 hover:text-red-500 transition-colors bg-white px-4 py-2 rounded-full shadow-sm border border-white"
+            >
+              Clear All
+            </button>
+          )}
+        </div>
 
-      <main className="max-w-screen-xl mx-auto px-8 md:px-24 mt-16 md:mt-24">
         <div className="mb-16">
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-[0.9] mb-4">
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none mb-6 text-slate-900">
             Compare.
           </h1>
-          <p className="text-xl md:text-2xl text-black/60 font-medium max-w-3xl leading-relaxed">
+          <p className="text-xl md:text-2xl text-slate-500 font-medium max-w-3xl leading-relaxed">
             Evaluate your top choices side-by-side to make the best decision.
           </p>
         </div>

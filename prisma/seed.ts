@@ -1,16 +1,14 @@
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient({})
+const prisma = new PrismaClient()
 
-async function main() {
-  console.log('Starting seeding...')
+const cities = ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Pune', 'Kolkata', 'Jaipur', 'Ahmedabad', 'Surat', 'Lucknow', 'Kanpur', 'Nagpur', 'Indore', 'Bhopal']
+const prefixes = ['Institute of Technology', 'Engineering College', 'University of Technology', 'Technical Institute', 'Academy of Engineering']
+const types = ['National', 'State', 'Global', 'Advanced', 'Modern', 'Pioneer']
+const states = ['Maharashtra', 'Delhi', 'Karnataka', 'Telangana', 'Tamil Nadu', 'Maharashtra', 'West Bengal', 'Rajasthan', 'Gujarat', 'Gujarat', 'Uttar Pradesh', 'Uttar Pradesh', 'Maharashtra', 'Madhya Pradesh', 'Madhya Pradesh']
 
-  await prisma.cutoff.deleteMany()
-  await prisma.placement.deleteMany()
-  await prisma.course.deleteMany()
-  await prisma.college.deleteMany()
-
-  const collegesData = [
+function generateColleges() {
+  const colleges = [
     {
       name: 'Indian Institute of Technology (IIT) Bombay',
       location: 'Mumbai, Maharashtra',
@@ -42,16 +40,6 @@ async function main() {
       cutoffs: [{ exam: 'JEE Advanced', rank: 110 }]
     },
     {
-      name: 'NIT Trichy',
-      location: 'Tiruchirappalli, Tamil Nadu',
-      fees: 180000,
-      rating: 4.8,
-      description: 'One of the top NITs in India, famous for its cultural festivals and outstanding academic excellence.',
-      courses: ['Computer Science', 'Production Engineering', 'Architecture'],
-      placements: [92.0, 90.0],
-      cutoffs: [{ exam: 'JEE Main', rank: 1500 }]
-    },
-    {
       name: 'VIT Vellore',
       location: 'Vellore, Tamil Nadu',
       fees: 350000,
@@ -60,58 +48,50 @@ async function main() {
       courses: ['Information Technology', 'Biotechnology', 'Computer Science'],
       placements: [85.0, 82.0],
       cutoffs: [{ exam: 'VITEEE', rank: 20000 }]
-    },
-    {
-      name: 'IIT Madras',
-      location: 'Chennai, Tamil Nadu',
-      fees: 250000,
-      rating: 4.9,
-      description: 'Ranked #1 engineering college in India consistently, nestled in a beautiful forested campus.',
-      courses: ['Aerospace Engineering', 'Computer Science', 'Naval Architecture'],
-      placements: [96.5, 95.0],
-      cutoffs: [{ exam: 'JEE Advanced', rank: 160 }]
-    },
-    {
-      name: 'Delhi Technological University (DTU)',
-      location: 'New Delhi, Delhi',
-      fees: 200000,
-      rating: 4.5,
-      description: 'A highly sought-after public university known for strong industry ties and stellar software placements.',
-      courses: ['Software Engineering', 'Computer Science', 'Electronics'],
-      placements: [90.0, 88.0],
-      cutoffs: [{ exam: 'JEE Main', rank: 4500 }]
-    },
-    {
-      name: 'IIIT Hyderabad',
-      location: 'Hyderabad, Telangana',
-      fees: 400000,
-      rating: 4.7,
-      description: 'A pioneer in IT research in India, offering some of the highest coding standards and packages.',
-      courses: ['Computer Science', 'Electronics and Communication'],
-      placements: [99.0, 98.0],
-      cutoffs: [{ exam: 'JEE Main', rank: 900 }]
-    },
-    {
-      name: 'Manipal Institute of Technology',
-      location: 'Manipal, Karnataka',
-      fees: 450000,
-      rating: 4.2,
-      description: 'Vibrant campus life with modern infrastructure and extensive global alumni network.',
-      courses: ['Computer & Communication', 'Mechatronics', 'Aeronautical'],
-      placements: [80.0, 75.0],
-      cutoffs: [{ exam: 'MET', rank: 5000 }]
-    },
-    {
-      name: 'Jadavpur University',
-      location: 'Kolkata, West Bengal',
-      fees: 25000,
-      rating: 4.6,
-      description: 'Extremely affordable public university offering exceptional ROI and high-quality research output.',
-      courses: ['Computer Science', 'Information Technology', 'Printing Engineering'],
-      placements: [93.0, 91.0],
-      cutoffs: [{ exam: 'WBJEE', rank: 100 }]
     }
   ]
+
+  const exams = ['JEE Main', 'WBJEE', 'MET', 'VITEEE', 'BITSAT', 'MHT CET', 'KCET', 'COMEDK']
+
+  for (let i = colleges.length; i < 55; i++) {
+    const cityIdx = Math.floor(Math.random() * cities.length)
+    const city = cities[cityIdx]
+    const state = states[cityIdx]
+    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)]
+    const type = types[Math.floor(Math.random() * types.length)]
+    
+    // Generate realistic variance
+    const isPremium = Math.random() > 0.8
+    const fees = isPremium ? (Math.floor(Math.random() * 4 + 2) * 100000) : (Math.floor(Math.random() * 8 + 1) * 25000)
+    const rating = (Math.random() * 1.5 + 3.0 + (isPremium ? 0.5 : 0)).toFixed(1)
+    const placement = Math.floor(Math.random() * 30 + 60 + (isPremium ? 10 : 0))
+    const exam = exams[Math.floor(Math.random() * exams.length)]
+    const rank = Math.floor(Math.random() * 50000 + (isPremium ? 1000 : 10000))
+
+    colleges.push({
+      name: `${city} ${type} ${prefix}`,
+      location: `${city}, ${state}`,
+      fees: fees,
+      rating: parseFloat(rating),
+      description: `A reputed institution in ${city} offering comprehensive engineering programs with a focus on practical skills and industry exposure.`,
+      courses: ['Computer Science', 'Electronics & Communication', 'Mechanical Engineering'].slice(0, Math.floor(Math.random() * 2 + 1)),
+      placements: [Math.min(placement, 99)],
+      cutoffs: [{ exam: exam, rank: rank }]
+    })
+  }
+
+  return colleges
+}
+
+async function main() {
+  console.log('Starting seeding...')
+
+  await prisma.cutoff.deleteMany()
+  await prisma.placement.deleteMany()
+  await prisma.course.deleteMany()
+  await prisma.college.deleteMany()
+
+  const collegesData = generateColleges()
 
   for (const col of collegesData) {
     await prisma.college.create({
@@ -134,7 +114,7 @@ async function main() {
     })
   }
 
-  console.log('Seeding finished.')
+  console.log('Seeding finished with', collegesData.length, 'colleges.')
 }
 
 main()
