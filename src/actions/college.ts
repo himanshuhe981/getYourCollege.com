@@ -48,3 +48,45 @@ export async function getCollegeById(id: string) {
     }
   })
 }
+
+export async function getCollegesByIds(ids: string[]) {
+  return await prisma.college.findMany({
+    where: { id: { in: ids } },
+    include: {
+      courses: true,
+      placements: {
+        orderBy: { year: 'desc' }
+      },
+      cutoffs: true
+    }
+  })
+}
+
+export async function predictColleges(exam: string, rank: number) {
+  // Find cutoffs where the user's rank is less than or equal to the maxRank (meaning they qualify)
+  const cutoffs = await prisma.cutoff.findMany({
+    where: {
+      exam: { equals: exam, mode: 'insensitive' },
+      maxRank: { gte: rank }
+    },
+    include: {
+      college: {
+        include: {
+          courses: true,
+          placements: { orderBy: { year: 'desc' }, take: 1 }
+        }
+      }
+    },
+    orderBy: { maxRank: 'asc' } // show closest matches first
+  })
+
+  // Extract colleges from cutoffs and remove duplicates
+  const collegeMap = new Map()
+  for (const c of cutoffs) {
+    if (!collegeMap.has(c.collegeId)) {
+      collegeMap.set(c.collegeId, c.college)
+    }
+  }
+
+  return Array.from(collegeMap.values())
+}

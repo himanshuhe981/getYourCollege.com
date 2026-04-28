@@ -5,6 +5,7 @@ import { getColleges, getLocations } from '@/actions/college'
 import { motion } from 'framer-motion'
 import { Search, MapPin, TrendingUp, DollarSign, Star, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import { CompareButton } from '@/components/CompareButton'
 
 type College = {
   id: string
@@ -182,15 +183,16 @@ export default function Home() {
                     whileHover={{ y: -8, transition: { duration: 0.2 } }}
                     className="group relative border border-black/10 bg-white/50 backdrop-blur-sm p-8 hover:border-black hover:shadow-2xl hover:shadow-black/5 transition-all duration-300 flex flex-col h-full"
                   >
-                    <div className="mb-6">
-                      <h3 className="text-2xl font-bold tracking-tight mb-3 leading-tight group-hover:text-black/70 transition-colors">
-                        {college.name}
-                      </h3>
-                      <div className="flex items-center gap-2 text-sm text-black/50 font-semibold tracking-wide uppercase">
-                        <MapPin className="w-4 h-4" />
-                        {college.location}
-                      </div>
-                    </div>
+                <div className="mb-6 pr-12">
+                  <h3 className="text-2xl font-bold tracking-tight mb-3 leading-tight group-hover:text-black/70 transition-colors">
+                    {college.name}
+                  </h3>
+                  <div className="flex items-center gap-2 text-sm text-black/50 font-semibold tracking-wide uppercase">
+                    <MapPin className="w-4 h-4" />
+                    {college.location}
+                  </div>
+                </div>
+                <CompareButton collegeId={college.id} />
                     
                     <p className="text-base text-black/60 line-clamp-3 mb-8 flex-grow leading-relaxed">
                       {college.description}

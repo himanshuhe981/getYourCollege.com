@@ -2,6 +2,7 @@ import { getCollegeById } from '@/actions/college'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { MapPin, DollarSign, Star, TrendingUp, ArrowLeft, BookOpen, GraduationCap } from 'lucide-react'
+import { CompareButton } from '@/components/CompareButton'
 
 // Using Next.js Server Components for the details page
 export default async function CollegePage({ params }: { params: { id: string } }) {
@@ -59,12 +60,8 @@ export default async function CollegePage({ params }: { params: { id: string } }
               {college.placements[0]?.percentage}%
             </div>
           </div>
-          <div className="border border-black/10 p-6 flex flex-col gap-2 bg-black text-white">
-            <span className="text-white/60 text-xs uppercase tracking-widest font-bold">Save College</span>
-            <button className="flex items-center justify-center gap-2 font-bold text-lg h-full mt-2 hover:opacity-80 transition-opacity">
-              <Star className="w-5 h-5" />
-              Add to list
-            </button>
+          <div className="border border-black/10 flex flex-col justify-center">
+            <CompareButton collegeId={college.id} fullWidth={true} />
           </div>
         </div>
 
