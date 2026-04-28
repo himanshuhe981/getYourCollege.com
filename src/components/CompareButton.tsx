@@ -25,12 +25,12 @@ export function CompareButton({ collegeId, fullWidth = false }: CompareButtonPro
       <button
         onClick={handleToggle}
         disabled={isFull}
-        className={`flex items-center justify-center gap-2 font-bold text-sm w-full h-full py-5 px-6 rounded-[1.5rem] transition-all ${
+        className={`flex items-center justify-center gap-2 font-bold text-sm w-full h-full py-5 px-6 transition-all ${
           isSelected
-            ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+            ? 'bg-emerald-600 text-white hover:bg-emerald-700'
             : isFull
-              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-              : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-500/20'
+              ? 'bg-black/5 text-black/30 cursor-not-allowed'
+              : 'bg-black text-white hover:bg-black/80'
         }`}
       >
         {isSelected ? <Check className="w-5 h-5" /> : <Scale className="w-5 h-5" />}
@@ -43,12 +43,12 @@ export function CompareButton({ collegeId, fullWidth = false }: CompareButtonPro
     <button
       onClick={handleToggle}
       disabled={isFull}
-      className={`absolute top-5 right-5 p-2.5 rounded-2xl border transition-all ${
+      className={`absolute top-5 right-5 p-2.5 border transition-all ${
         isSelected
-          ? 'bg-emerald-500 text-white border-emerald-500 shadow-md shadow-emerald-500/20'
+          ? 'bg-emerald-600 text-white border-emerald-600'
           : isFull
-            ? 'bg-white/60 text-slate-300 border-slate-200 cursor-not-allowed'
-            : 'bg-white/80 text-slate-600 border-white hover:bg-indigo-600 hover:text-white hover:border-indigo-600 backdrop-blur-md shadow-sm'
+            ? 'bg-white text-black/20 border-black/10 cursor-not-allowed'
+            : 'bg-white text-black border-black/10 hover:bg-black hover:text-white hover:border-black'
       }`}
       title={isSelected ? 'Remove from compare' : 'Add to compare'}
     >
