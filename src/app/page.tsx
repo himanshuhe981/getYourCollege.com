@@ -85,20 +85,37 @@ export default function Home() {
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 md:px-16 pt-16 pb-32">
 
-        {/* Hero */}
-        <section className="mb-24 max-w-3xl">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <h2 className="text-6xl md:text-[7rem] font-bold tracking-tighter leading-none mb-1 text-black">
+        {/* Hero — full-width, animated */}
+        <section className="mb-20 pt-8">
+          <div className="overflow-hidden mb-2">
+            <motion.h2
+              initial={{ y: '110%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+              className="text-6xl sm:text-8xl md:text-[9rem] lg:text-[10rem] font-bold tracking-tighter leading-none text-black"
+            >
               Find your
-            </h2>
-            <h2 className="text-6xl md:text-[7rem] font-bold font-[family-name:var(--font-caveat)] leading-none text-black/20 mb-10">
+            </motion.h2>
+          </div>
+          <div className="overflow-hidden mb-10">
+            <motion.h2
+              initial={{ y: '110%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1], delay: 0.12 }}
+              className="text-6xl sm:text-8xl md:text-[9rem] lg:text-[10rem] font-bold font-[family-name:var(--font-caveat)] leading-none text-black/20"
+            >
               next chapter.
-            </h2>
-            <p className="text-xl md:text-2xl text-black/50 font-medium max-w-xl leading-relaxed">
-              Explore top engineering colleges in India.<br className="hidden md:block" />
-              Filter by fees, location, and placement records.
-            </p>
-          </motion.div>
+            </motion.h2>
+          </div>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.45 }}
+            className="text-lg md:text-xl text-black/50 font-medium max-w-lg leading-relaxed"
+          >
+            Explore top engineering colleges in India.
+            Filter by fees, location, and placement records.
+          </motion.p>
         </section>
 
         {/* Search + Filters — z-20 so dropdowns clear the cards */}
