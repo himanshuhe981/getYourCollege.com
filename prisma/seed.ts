@@ -7,8 +7,20 @@ const prefixes = ['Institute of Technology', 'Engineering College', 'University 
 const types = ['National', 'State', 'Global', 'Advanced', 'Modern', 'Pioneer']
 const states = ['Maharashtra', 'Delhi', 'Karnataka', 'Telangana', 'Tamil Nadu', 'Maharashtra', 'West Bengal', 'Rajasthan', 'Gujarat', 'Gujarat', 'Uttar Pradesh', 'Uttar Pradesh', 'Maharashtra', 'Madhya Pradesh', 'Madhya Pradesh']
 
-function generateColleges() {
-  const colleges = [
+type CollegeData = {
+  name: string
+  location: string
+  fees: number
+  rating: number
+  description: string
+  courses: string[]
+  placements: number[]
+  cutoffs: { exam: string; rank: number }[]
+  reviews: { authorName: string; rating: number; content: string }[]
+}
+
+function generateColleges(): CollegeData[] {
+  const colleges: CollegeData[] = [
     {
       name: 'Indian Institute of Technology (IIT) Bombay',
       location: 'Mumbai, Maharashtra',
@@ -17,7 +29,11 @@ function generateColleges() {
       description: 'Globally recognized as a leader in engineering education and research, featuring state-of-the-art facilities.',
       courses: ['Computer Science', 'Mechanical Engineering', 'Electrical Engineering'],
       placements: [98.5, 97.0],
-      cutoffs: [{ exam: 'JEE Advanced', rank: 67 }]
+      cutoffs: [{ exam: 'JEE Advanced', rank: 67 }],
+      reviews: [
+        { authorName: 'Arjun K.', rating: 5.0, content: 'World-class faculty and research opportunities. Placement record speaks for itself.' },
+        { authorName: 'Sneha R.', rating: 4.8, content: 'Intense but rewarding. The alumni network is unmatched.' }
+      ]
     },
     {
       name: 'BITS Pilani',
@@ -27,7 +43,11 @@ function generateColleges() {
       description: 'Premier private technical institute with a strong entrepreneurial culture and zero-attendance policy.',
       courses: ['Computer Science', 'Electronics', 'Chemical Engineering'],
       placements: [95.0, 94.5],
-      cutoffs: [{ exam: 'BITSAT', rank: 350 }, { exam: 'JEE Main', rank: 5000 }]
+      cutoffs: [{ exam: 'BITSAT', rank: 350 }, { exam: 'JEE Main', rank: 5000 }],
+      reviews: [
+        { authorName: 'Rahul M.', rating: 4.9, content: 'The freedom to structure your own schedule is something you will not get elsewhere.' },
+        { authorName: 'Divya S.', rating: 4.7, content: 'Great campus culture and strong placements in product companies.' }
+      ]
     },
     {
       name: 'IIT Delhi',
@@ -37,7 +57,11 @@ function generateColleges() {
       description: 'A globally renowned research and engineering institution located in the heart of India\'s capital.',
       courses: ['Computer Science', 'Mathematics & Computing', 'Civil Engineering'],
       placements: [97.5, 96.0],
-      cutoffs: [{ exam: 'JEE Advanced', rank: 110 }]
+      cutoffs: [{ exam: 'JEE Advanced', rank: 110 }],
+      reviews: [
+        { authorName: 'Priya T.', rating: 5.0, content: 'Exceptional professors and a research culture that pushes you to think beyond textbooks.' },
+        { authorName: 'Karan B.', rating: 4.8, content: 'Being in Delhi gives you access to a lot of internship and networking opportunities.' }
+      ]
     },
     {
       name: 'VIT Vellore',
@@ -47,7 +71,11 @@ function generateColleges() {
       description: 'Known for its diverse student body, international collaborations, and flexible credit system.',
       courses: ['Information Technology', 'Biotechnology', 'Computer Science'],
       placements: [85.0, 82.0],
-      cutoffs: [{ exam: 'VITEEE', rank: 20000 }]
+      cutoffs: [{ exam: 'VITEEE', rank: 20000 }],
+      reviews: [
+        { authorName: 'Aisha P.', rating: 4.3, content: 'Good infrastructure and plenty of clubs. Placements have improved year on year.' },
+        { authorName: 'Rohit V.', rating: 4.2, content: 'Flexible curriculum is a big plus. Faculty quality varies by department.' }
+      ]
     }
   ]
 

@@ -87,7 +87,7 @@ export default function Home() {
 
         {/* Hero — full-width, animated */}
         <section className="mb-20 pt-8">
-          <div className="overflow-hidden mb-2">
+          <div className="overflow-hidden mb-2 pb-4">
             <motion.h2
               initial={{ y: '110%', opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
