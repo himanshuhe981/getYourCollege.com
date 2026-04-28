@@ -1,133 +1,167 @@
 import { getCollegeById } from '@/actions/college'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { MapPin, DollarSign, Star, TrendingUp, ArrowLeft, BookOpen, GraduationCap } from 'lucide-react'
+import { MapPin, Star, TrendingUp, ArrowLeft, BookOpen, GraduationCap, MessageSquare } from 'lucide-react'
 import { CompareButton } from '@/components/CompareButton'
 
-const formatRupee = (amount: number) => {
-  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount)
-}
+const formatRupee = (amount: number) =>
+  new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount)
 
-// Using Next.js Server Components for the details page
 export default async function CollegePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const college = await getCollegeById(id)
 
-  if (!college) {
-    notFound()
-  }
+  if (!college) notFound()
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white pb-24">
-      <main className="max-w-screen-xl mx-auto px-8 md:px-24 mt-16 md:mt-24">
-        {/* Header Section */}
-        <div className="mb-16">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-black/50 hover:text-black transition-colors mb-8 border border-black/10 px-4 py-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Discover
-          </Link>
-          <div className="flex items-center gap-2 text-sm text-black/50 font-bold tracking-widest uppercase mb-6">
-            <MapPin className="w-4 h-4" />
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-indigo-500 selection:text-white pb-24">
+      <main className="max-w-screen-xl mx-auto px-6 md:px-16 mt-12">
+
+        {/* Back link */}
+        <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 transition-colors mb-10 bg-white/80 border border-white shadow-sm px-4 py-2 rounded-full">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Discover
+        </Link>
+
+        {/* Hero */}
+        <div className="mb-12">
+          <div className="flex items-center gap-2 text-xs text-slate-500 font-bold tracking-widest uppercase mb-4">
+            <MapPin className="w-3 h-3" />
             {college.location}
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none mb-8 text-black">
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-none mb-6 text-slate-800">
             {college.name}
           </h1>
-          <p className="text-xl md:text-2xl text-black/60 font-medium max-w-3xl leading-relaxed">
+          <p className="text-xl text-slate-500 font-medium max-w-3xl leading-relaxed">
             {college.description}
           </p>
         </div>
 
-        {/* Quick Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-24">
-          <div className="border border-black/10 p-6 flex flex-col gap-2 rounded-none">
-            <span className="text-black/40 text-xs uppercase tracking-widest font-bold">Average Fees</span>
-            <div className="flex items-center gap-2 font-bold text-2xl text-black">
-              {formatRupee(college.fees)}
-            </div>
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+          <div className="bg-white/70 backdrop-blur-md border border-white shadow-sm rounded-[1.5rem] p-6 flex flex-col gap-2">
+            <span className="text-slate-400 text-[10px] uppercase tracking-widest font-bold">Annual Fees</span>
+            <div className="font-bold text-xl text-slate-800">{formatRupee(college.fees)}</div>
           </div>
-          <div className="border border-black/10 p-6 flex flex-col gap-2 rounded-none">
-            <span className="text-black/40 text-xs uppercase tracking-widest font-bold">Rating</span>
-            <div className="flex items-center gap-2 font-bold text-2xl text-black">
-              <Star className="w-5 h-5 fill-black text-black" />
+          <div className="bg-white/70 backdrop-blur-md border border-white shadow-sm rounded-[1.5rem] p-6 flex flex-col gap-2">
+            <span className="text-slate-400 text-[10px] uppercase tracking-widest font-bold">Rating</span>
+            <div className="flex items-center gap-2 font-bold text-xl text-slate-800">
+              <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
               {college.rating} / 5.0
             </div>
           </div>
-          <div className="border border-black/10 p-6 flex flex-col gap-2 rounded-none">
-            <span className="text-black/40 text-xs uppercase tracking-widest font-bold">Highest Placement</span>
-            <div className="flex items-center gap-2 font-bold text-2xl text-emerald-600">
+          <div className="bg-white/70 backdrop-blur-md border border-white shadow-sm rounded-[1.5rem] p-6 flex flex-col gap-2">
+            <span className="text-slate-400 text-[10px] uppercase tracking-widest font-bold">Top Placement</span>
+            <div className="flex items-center gap-2 font-bold text-xl text-emerald-600">
               <TrendingUp className="w-5 h-5" />
               {college.placements[0]?.percentage}%
             </div>
           </div>
-          <div className="border border-black/10 flex flex-col justify-center rounded-none relative">
+          <div className="bg-white/70 backdrop-blur-md border border-white shadow-sm rounded-[1.5rem] overflow-hidden relative">
             <CompareButton collegeId={college.id} fullWidth={true} />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Main Content */}
-          <div className="md:col-span-2 space-y-16">
-            {/* Courses Section */}
+          <div className="md:col-span-2 space-y-14">
+
+            {/* Courses */}
             <section>
-              <h2 className="text-3xl font-bold tracking-tight mb-8 flex items-center gap-3">
-                <BookOpen className="w-8 h-8" />
+              <h2 className="text-2xl font-bold tracking-tight mb-6 flex items-center gap-3 text-slate-800">
+                <BookOpen className="w-6 h-6 text-indigo-500" />
                 Courses Offered
               </h2>
-              <div className="grid gap-4">
+              <div className="grid gap-3">
                 {college.courses.map(course => (
-                  <div key={course.id} className="border border-black/10 p-6 flex justify-between items-center group hover:border-black transition-colors rounded-none">
-                    <span className="font-bold text-lg">{course.name}</span>
-                    <span className="text-black/50 font-medium text-sm bg-black/5 px-3 py-1">{course.duration}</span>
+                  <div key={course.id} className="bg-white/70 border border-white shadow-sm rounded-2xl p-5 flex justify-between items-center hover:shadow-md hover:border-indigo-100 transition-all">
+                    <span className="font-bold text-slate-800">{course.name}</span>
+                    <span className="text-slate-500 font-medium text-sm bg-slate-100 px-3 py-1 rounded-full">{course.duration}</span>
                   </div>
                 ))}
               </div>
             </section>
 
-            {/* Placement Trends */}
+            {/* Placements */}
             <section>
-              <h2 className="text-3xl font-bold tracking-tight mb-8 flex items-center gap-3">
-                <GraduationCap className="w-8 h-8" />
+              <h2 className="text-2xl font-bold tracking-tight mb-6 flex items-center gap-3 text-slate-800">
+                <GraduationCap className="w-6 h-6 text-indigo-500" />
                 Placement Record
               </h2>
-              <div className="border border-black/10 p-8 rounded-none">
+              <div className="bg-white/70 backdrop-blur-md border border-white shadow-sm rounded-[1.5rem] p-8">
                 <div className="flex flex-col gap-6">
                   {college.placements.map(p => (
                     <div key={p.id} className="flex items-center gap-6">
-                      <div className="w-16 text-black/40 font-bold">{p.year}</div>
-                      <div className="flex-grow bg-black/5 h-4 relative overflow-hidden">
-                        <div 
-                          className="absolute top-0 left-0 h-full bg-black"
+                      <div className="w-16 text-slate-400 font-bold text-sm">{p.year}</div>
+                      <div className="flex-grow bg-slate-100 h-3 rounded-full relative overflow-hidden">
+                        <div
+                          className="absolute top-0 left-0 h-full bg-indigo-500 rounded-full"
                           style={{ width: `${p.percentage}%` }}
                         />
                       </div>
-                      <div className="w-16 text-right font-bold">{p.percentage}%</div>
+                      <div className="w-16 text-right font-bold text-slate-700">{p.percentage}%</div>
                     </div>
                   ))}
                 </div>
               </div>
             </section>
+
+            {/* Reviews */}
+            {college.reviews && college.reviews.length > 0 && (
+              <section>
+                <h2 className="text-2xl font-bold tracking-tight mb-6 flex items-center gap-3 text-slate-800">
+                  <MessageSquare className="w-6 h-6 text-indigo-500" />
+                  Student Reviews
+                </h2>
+                <div className="grid gap-4">
+                  {college.reviews.map(review => (
+                    <div key={review.id} className="bg-white/70 backdrop-blur-md border border-white shadow-sm rounded-2xl p-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg">
+                            {review.authorName.charAt(0)}
+                          </div>
+                          <div>
+                            <div className="font-bold text-slate-800">{review.authorName}</div>
+                            <div className="text-xs text-slate-400">
+                              {new Date(review.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short' })}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 bg-amber-50 px-3 py-1 rounded-full">
+                          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                          <span className="font-bold text-sm text-amber-700">{review.rating.toFixed(1)}</span>
+                        </div>
+                      </div>
+                      <p className="text-slate-600 leading-relaxed">{review.content}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-8">
-            <div className="border border-black/10 p-8 bg-black/5 rounded-none">
-              <h3 className="font-bold text-xl mb-6 tracking-tight">Exam Cutoffs</h3>
+          <div className="space-y-6">
+            <div className="bg-white/70 backdrop-blur-md border border-white shadow-sm rounded-[1.5rem] p-7">
+              <h3 className="font-bold text-lg mb-5 text-slate-800">Exam Cutoffs</h3>
               <div className="space-y-4">
                 {college.cutoffs.map(c => (
-                  <div key={c.id} className="flex justify-between items-center border-b border-black/10 pb-4 last:border-0 last:pb-0">
-                    <span className="font-bold">{c.exam}</span>
-                    <span className="text-sm font-medium text-black/60">Rank: {c.maxRank}</span>
+                  <div key={c.id} className="flex justify-between items-center border-b border-slate-100 pb-4 last:border-0 last:pb-0">
+                    <span className="font-semibold text-slate-700">{c.exam}</span>
+                    <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
+                      Rank ≤ {c.maxRank.toLocaleString('en-IN')}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
-            
-            <div className="border border-black/10 p-8 rounded-none">
-              <h3 className="font-bold text-xl mb-4 tracking-tight">Need help deciding?</h3>
-              <p className="text-black/60 mb-6 font-medium">Add this college to your comparison list to see how it stacks up against others.</p>
-              <Link href="/compare" className="block w-full text-center bg-black text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-black/80 transition-colors">
-                Compare Now
+
+            <div className="bg-indigo-600 text-white rounded-[1.5rem] p-7">
+              <h3 className="font-bold text-lg mb-3">Compare This College</h3>
+              <p className="text-indigo-200 text-sm mb-6 leading-relaxed">See how it stacks up against other colleges side-by-side.</p>
+              <Link href="/compare" className="block w-full text-center bg-white text-indigo-700 py-3 rounded-xl font-bold text-sm hover:bg-indigo-50 transition-colors">
+                Go to Compare →
               </Link>
             </div>
           </div>

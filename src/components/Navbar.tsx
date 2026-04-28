@@ -12,14 +12,14 @@ export function Navbar() {
 
   return (
     <>
-      <header className="py-6 px-8 md:px-24 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md z-50 border-b border-black/10">
+      <header className="py-6 px-8 md:px-16 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-xl z-50 border-b border-slate-200/50 shadow-sm">
         <Link href="/" className="flex items-center gap-2">
           <motion.h1 
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            className="text-2xl font-bold tracking-tighter text-black"
+            className="text-4xl font-bold font-[family-name:var(--font-caveat)] text-indigo-600 tracking-tight"
           >
-            Discover.
+            getYourCollege.com
           </motion.h1>
         </Link>
         
@@ -27,22 +27,22 @@ export function Navbar() {
         <motion.nav 
           initial={{ opacity: 0, x: 10 }}
           animate={{ opacity: 1, x: 0 }}
-          className="hidden md:flex gap-10 text-sm font-bold tracking-wide uppercase"
+          className="hidden md:flex gap-8 text-sm font-semibold tracking-wide"
         >
-          <Link href="/" className={`transition-colors ${pathname === '/' ? 'text-black underline underline-offset-8 decoration-2' : 'text-black/40 hover:text-black'}`}>
+          <Link href="/" className={`transition-colors ${pathname === '/' ? 'text-indigo-600' : 'text-slate-500 hover:text-indigo-500'}`}>
             Colleges
           </Link>
-          <Link href="/compare" className={`transition-colors ${pathname === '/compare' ? 'text-black underline underline-offset-8 decoration-2' : 'text-black/40 hover:text-black'}`}>
+          <Link href="/compare" className={`transition-colors ${pathname === '/compare' ? 'text-indigo-600' : 'text-slate-500 hover:text-indigo-500'}`}>
             Compare
           </Link>
-          <Link href="/predictor" className={`transition-colors ${pathname === '/predictor' ? 'text-black underline underline-offset-8 decoration-2' : 'text-black/40 hover:text-black'}`}>
+          <Link href="/predictor" className={`transition-colors ${pathname === '/predictor' ? 'text-indigo-600' : 'text-slate-500 hover:text-indigo-500'}`}>
             Predictor
           </Link>
         </motion.nav>
 
         {/* Mobile Toggle */}
-        <button 
-          className="md:hidden text-black"
+        <button
+          className="md:hidden text-slate-700 hover:text-indigo-600 transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -56,15 +56,15 @@ export function Navbar() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-white pt-24 px-8 flex flex-col gap-8 md:hidden"
+            className="fixed inset-0 z-40 bg-white/95 backdrop-blur-xl pt-28 px-10 flex flex-col gap-8 md:hidden border-t border-slate-100"
           >
-            <Link onClick={() => setMobileMenuOpen(false)} href="/" className={`text-4xl font-bold tracking-tighter ${pathname === '/' ? 'text-black' : 'text-black/40'}`}>
+            <Link onClick={() => setMobileMenuOpen(false)} href="/" className={`text-5xl font-bold tracking-tight font-[family-name:var(--font-caveat)] ${pathname === '/' ? 'text-indigo-600' : 'text-slate-400'}`}>
               Colleges
             </Link>
-            <Link onClick={() => setMobileMenuOpen(false)} href="/compare" className={`text-4xl font-bold tracking-tighter ${pathname === '/compare' ? 'text-black' : 'text-black/40'}`}>
+            <Link onClick={() => setMobileMenuOpen(false)} href="/compare" className={`text-5xl font-bold tracking-tight font-[family-name:var(--font-caveat)] ${pathname === '/compare' ? 'text-indigo-600' : 'text-slate-400'}`}>
               Compare
             </Link>
-            <Link onClick={() => setMobileMenuOpen(false)} href="/predictor" className={`text-4xl font-bold tracking-tighter ${pathname === '/predictor' ? 'text-black' : 'text-black/40'}`}>
+            <Link onClick={() => setMobileMenuOpen(false)} href="/predictor" className={`text-5xl font-bold tracking-tight font-[family-name:var(--font-caveat)] ${pathname === '/predictor' ? 'text-indigo-600' : 'text-slate-400'}`}>
               Predictor
             </Link>
           </motion.div>

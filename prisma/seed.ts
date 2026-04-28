@@ -76,7 +76,12 @@ function generateColleges() {
       description: `A reputed institution in ${city} offering comprehensive engineering programs with a focus on practical skills and industry exposure.`,
       courses: ['Computer Science', 'Electronics & Communication', 'Mechanical Engineering'].slice(0, Math.floor(Math.random() * 2 + 1)),
       placements: [Math.min(placement, 99)],
-      cutoffs: [{ exam: exam, rank: rank }]
+      cutoffs: [{ exam: exam, rank: rank }],
+      reviews: [
+        { authorName: 'Aarav M.', rating: parseFloat(rating), content: 'Great faculty and placement support. Highly recommended for CSE.' },
+        { authorName: 'Priya S.', rating: parseFloat(rating) - 0.5, content: 'Campus life is amazing, but the curriculum could be updated to modern standards.' },
+        { authorName: 'Rohan D.', rating: parseFloat(rating) + 0.2 > 5 ? 5 : parseFloat(rating) + 0.2, content: 'Excellent infrastructure. The labs are well-equipped.' }
+      ]
     })
   }
 
@@ -86,6 +91,7 @@ function generateColleges() {
 async function main() {
   console.log('Starting seeding...')
 
+  await prisma.review.deleteMany()
   await prisma.cutoff.deleteMany()
   await prisma.placement.deleteMany()
   await prisma.course.deleteMany()
@@ -109,6 +115,9 @@ async function main() {
         },
         cutoffs: {
           create: col.cutoffs.map(c => ({ exam: c.exam, maxRank: c.rank }))
+        },
+        reviews: {
+          create: col.reviews ? col.reviews.map(r => ({ authorName: r.authorName, rating: r.rating, content: r.content })) : []
         }
       }
     })

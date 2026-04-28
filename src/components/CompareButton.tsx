@@ -1,37 +1,36 @@
 'use client'
 
 import { useCompareStore } from '@/store/compare'
-import { Plus, Check, Scale } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { Scale, Check } from 'lucide-react'
 
-export function CompareButton({ collegeId, fullWidth = false }: { collegeId: string, fullWidth?: boolean }) {
+interface CompareButtonProps {
+  collegeId: string
+  fullWidth?: boolean
+}
+
+export function CompareButton({ collegeId, fullWidth = false }: CompareButtonProps) {
   const { selectedCollegeIds, addCollege, removeCollege } = useCompareStore()
-  const router = useRouter()
-  
   const isSelected = selectedCollegeIds.includes(collegeId)
   const isFull = selectedCollegeIds.length >= 3 && !isSelected
 
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (isSelected) {
-      removeCollege(collegeId)
-    } else {
-      addCollege(collegeId)
-    }
+    if (isSelected) removeCollege(collegeId)
+    else if (!isFull) addCollege(collegeId)
   }
 
   if (fullWidth) {
     return (
-      <button 
+      <button
         onClick={handleToggle}
         disabled={isFull}
-        className={`flex items-center justify-center gap-2 font-bold text-lg w-full h-full py-4 px-6 rounded-none transition-all ${
-          isSelected 
-            ? 'bg-emerald-600 text-white hover:bg-emerald-700 border-emerald-600' 
-            : isFull 
-              ? 'bg-black/5 text-black/40 cursor-not-allowed border-transparent'
-              : 'bg-black text-white hover:bg-black/80 border-black'
+        className={`flex items-center justify-center gap-2 font-bold text-sm w-full h-full py-5 px-6 rounded-[1.5rem] transition-all ${
+          isSelected
+            ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+            : isFull
+              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+              : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-500/20'
         }`}
       >
         {isSelected ? <Check className="w-5 h-5" /> : <Scale className="w-5 h-5" />}
@@ -41,17 +40,17 @@ export function CompareButton({ collegeId, fullWidth = false }: { collegeId: str
   }
 
   return (
-    <button 
+    <button
       onClick={handleToggle}
       disabled={isFull}
-      className={`absolute top-6 right-6 p-3 rounded-none border transition-all ${
-        isSelected 
-          ? 'bg-emerald-600 text-white border-emerald-600' 
-          : isFull 
-            ? 'bg-white/50 text-black/30 border-black/10 cursor-not-allowed'
-            : 'bg-white/80 text-black hover:bg-black hover:text-white border-black/10 hover:border-black backdrop-blur-md'
+      className={`absolute top-5 right-5 p-2.5 rounded-2xl border transition-all ${
+        isSelected
+          ? 'bg-emerald-500 text-white border-emerald-500 shadow-md shadow-emerald-500/20'
+          : isFull
+            ? 'bg-white/60 text-slate-300 border-slate-200 cursor-not-allowed'
+            : 'bg-white/80 text-slate-600 border-white hover:bg-indigo-600 hover:text-white hover:border-indigo-600 backdrop-blur-md shadow-sm'
       }`}
-      title={isSelected ? "Remove from compare" : "Add to compare"}
+      title={isSelected ? 'Remove from compare' : 'Add to compare'}
     >
       {isSelected ? <Check className="w-4 h-4" /> : <Scale className="w-4 h-4" />}
     </button>

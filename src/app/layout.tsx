@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Caveat } from "next/font/google";
 import "./globals.css";
+import { Navbar } from '@/components/Navbar'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,10 +13,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-import { Navbar } from '@/components/Navbar'
+const caveat = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
-  title: "Campus Discovery",
+  title: "getYourCollege.com",
   description: "Find your next chapter.",
 };
 
@@ -27,9 +31,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${caveat.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 font-sans">
         <Navbar />
         {children}
       </body>

@@ -1,13 +1,101 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useCompareStore } from '@/store/compare'
-import { getCollegesByIds } from '@/actions/college'
+import { getCollegesByIds, searchCollegesByName } from '@/actions/college'
 import Link from 'next/link'
-import { ArrowLeft, X, Check, MapPin, DollarSign, Star, TrendingUp } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowLeft, X, Check, MapPin, Star, TrendingUp, Search, Plus } from 'lucide-react'
 
-const formatRupee = (amount: number) => {
-  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount)
+const formatRupee = (amount: number) =>
+  new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount)
+
+type SearchResult = { id: string; name: string; location: string }
+
+function AddCollegeSlot({ slotIndex }: { slotIndex: number }) {
+  const { addCollege, selectedCollegeIds } = useCompareStore()
+  const [query, setQuery] = useState('')
+  const [results, setResults] = useState<SearchResult[]>([])
+  const [isSearching, setIsSearching] = useState(false)
+  const [showDropdown, setShowDropdown] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const timeout = setTimeout(async () => {
+      if (query.trim().length < 2) { setResults([]); setShowDropdown(false); return }
+      setIsSearching(true)
+      const data = await searchCollegesByName(query)
+      // Filter out already selected colleges
+      setResults((data as SearchResult[]).filter(c => !selectedCollegeIds.includes(c.id)))
+      setShowDropdown(true)
+      setIsSearching(false)
+    }, 300)
+    return () => clearTimeout(timeout)
+  }, [query, selectedCollegeIds])
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  return (
+    <th className="p-6 border-b border-slate-200/60 align-top w-1/4">
+      <div className="flex flex-col items-center text-center mb-4">
+        <div className="w-12 h-12 rounded-full border-2 border-dashed border-indigo-200 flex items-center justify-center mb-3 bg-indigo-50">
+          <Plus className="w-5 h-5 text-indigo-400" />
+        </div>
+        <p className="text-sm font-bold text-slate-500 mb-4">Add a college</p>
+      </div>
+      <div className="relative" ref={ref}>
+        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
+          <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
+          <input
+            type="text"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder="Search college..."
+            className="bg-transparent text-sm font-medium text-slate-700 focus:outline-none w-full placeholder:text-slate-400"
+          />
+        </div>
+        <AnimatePresence>
+          {showDropdown && results.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 6 }}
+              className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur-xl border border-white shadow-xl rounded-2xl p-2 z-50"
+            >
+              {results.map(r => (
+                <button
+                  key={r.id}
+                  onClick={() => { addCollege(r.id); setQuery(''); setShowDropdown(false) }}
+                  className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-indigo-50 transition-colors"
+                >
+                  <div className="font-bold text-slate-800 text-sm leading-tight">{r.name}</div>
+                  <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                    <MapPin className="w-3 h-3" /> {r.location}
+                  </div>
+                </button>
+              ))}
+            </motion.div>
+          )}
+          {showDropdown && !isSearching && results.length === 0 && query.length >= 2 && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
+              className="absolute top-full mt-2 left-0 right-0 bg-white border border-slate-200 shadow-lg rounded-2xl p-4 z-50 text-center text-sm text-slate-500"
+            >
+              No colleges found
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </th>
+  )
 }
 
 export default function ComparePage() {
@@ -17,11 +105,7 @@ export default function ComparePage() {
 
   useEffect(() => {
     async function loadColleges() {
-      if (selectedCollegeIds.length === 0) {
-        setColleges([])
-        setLoading(false)
-        return
-      }
+      if (selectedCollegeIds.length === 0) { setColleges([]); setLoading(false); return }
       setLoading(true)
       const data = await getCollegesByIds(selectedCollegeIds)
       setColleges(data)
@@ -30,165 +114,107 @@ export default function ComparePage() {
     loadColleges()
   }, [selectedCollegeIds])
 
+  const emptySlots = 3 - colleges.length
+
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white pb-24">
-      <main className="max-w-screen-xl mx-auto px-8 md:px-24 mt-16 md:mt-24">
-        <div className="flex items-center justify-between mb-12">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-black/50 hover:text-black transition-colors border border-black/10 px-4 py-2">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-indigo-500 selection:text-white pb-24">
+      <main className="max-w-screen-xl mx-auto px-6 md:px-16 mt-12">
+
+        <div className="flex items-center justify-between mb-10">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 transition-colors bg-white/80 border border-white shadow-sm px-4 py-2 rounded-full">
             <ArrowLeft className="w-4 h-4" />
             Back to Discover
           </Link>
           {colleges.length > 0 && (
-            <button 
-              onClick={() => clear()}
-              className="text-xs uppercase font-bold tracking-widest text-black/50 hover:text-red-500 transition-colors border border-black/10 px-4 py-2"
-            >
+            <button onClick={clear} className="text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-red-500 transition-colors bg-white/80 border border-white shadow-sm px-4 py-2 rounded-full">
               Clear All
             </button>
           )}
         </div>
 
-        <div className="mb-16">
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none mb-6 text-black">
+        <div className="mb-12">
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-none mb-4 text-slate-800">
             Compare.
           </h1>
-          <p className="text-xl md:text-2xl text-black/60 font-medium max-w-3xl leading-relaxed">
+          <p className="text-xl text-slate-500 font-medium max-w-2xl leading-relaxed">
             Evaluate your top choices side-by-side to make the best decision.
           </p>
         </div>
 
         {loading ? (
-          <div className="text-center py-24 text-black/40 font-bold uppercase tracking-widest animate-pulse">
-            Loading Comparison...
-          </div>
-        ) : colleges.length === 0 ? (
-          <div className="text-center py-24 border border-black/10 border-dashed">
-            <h2 className="text-2xl font-bold tracking-tight mb-4">No colleges selected</h2>
-            <p className="text-black/60 mb-8 font-medium">Go back to the discover page and select up to 3 colleges to compare.</p>
-            <Link href="/" className="bg-black text-white px-8 py-4 font-bold uppercase tracking-widest text-xs hover:bg-black/80 transition-colors">
-              Find Colleges
-            </Link>
+          <div className="text-center py-24 text-slate-400 font-bold uppercase tracking-widest animate-pulse">Loading…</div>
+        ) : colleges.length === 0 && emptySlots === 3 ? (
+          /* Empty state — still show 3 search slots */
+          <div className="bg-white/70 backdrop-blur-md border border-white shadow-sm rounded-[2rem] overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse min-w-[600px]">
+                <thead>
+                  <tr>
+                    <th className="p-6 border-b border-slate-200/60 text-left w-1/4">
+                      <span className="text-xs uppercase font-bold tracking-widest text-slate-400">Add up to 3 colleges</span>
+                    </th>
+                    {[0, 1, 2].map(i => <AddCollegeSlot key={i} slotIndex={i} />)}
+                  </tr>
+                </thead>
+              </table>
+            </div>
           </div>
         ) : (
-          <div className="overflow-x-auto pb-8">
-            <table className="w-full border-collapse min-w-[800px]">
-              <thead>
-                <tr>
-                  <th className="p-6 border-b border-black/10 text-left align-bottom w-1/4">
-                    <span className="text-xs uppercase font-bold tracking-widest text-black/40">Features</span>
-                  </th>
-                  {colleges.map(c => (
-                    <th key={c.id} className="p-6 border-b border-black/10 text-left relative w-1/4">
-                      <button 
-                        onClick={() => removeCollege(c.id)}
-                        className="absolute top-6 right-6 p-2 text-black/40 hover:text-red-500 transition-colors"
-                        title="Remove"
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
-                      <h3 className="text-2xl font-bold tracking-tight mb-2 pr-8 leading-tight">{c.name}</h3>
-                      <Link href={`/college/${c.id}`} className="text-sm font-bold uppercase tracking-wider text-black/50 hover:text-black underline underline-offset-4">
-                        View Full Details
-                      </Link>
+          <div className="bg-white/70 backdrop-blur-md border border-white shadow-sm rounded-[2rem] overflow-hidden">
+            <div className="overflow-x-auto pb-4">
+              <table className="w-full border-collapse min-w-[700px]">
+                <thead>
+                  <tr>
+                    <th className="p-6 border-b border-slate-200/60 text-left w-1/4">
+                      <span className="text-xs uppercase font-bold tracking-widest text-slate-400">Features</span>
                     </th>
-                  ))}
-                  {/* Fill empty slots up to 3 */}
-                  {Array.from({ length: 3 - colleges.length }).map((_, i) => (
-                    <th key={`empty-${i}`} className="p-6 border-b border-black/10 border-dashed text-center w-1/4">
-                      <Link href="/">
-                        <div className="w-12 h-12 rounded-full border-2 border-black/10 border-dashed flex items-center justify-center mx-auto mb-4 hover:border-black transition-colors cursor-pointer group">
-                          <span className="text-black/20 font-bold group-hover:text-black transition-colors">+</span>
-                        </div>
-                        <span className="text-xs uppercase font-bold tracking-widest text-black/30 hover:text-black transition-colors cursor-pointer">Add College</span>
-                      </Link>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {/* Location row */}
-                <tr>
-                  <td className="p-6 border-b border-black/5 text-sm font-bold uppercase tracking-widest text-black/60">Location</td>
-                  {colleges.map(c => (
-                    <td key={c.id} className="p-6 border-b border-black/5 border-l border-black/5 font-medium">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-black/50" />
-                        {c.location}
-                      </div>
-                    </td>
-                  ))}
-                  {Array.from({ length: 3 - colleges.length }).map((_, i) => (
-                    <td key={`empty-loc-${i}`} className="p-6 border-b border-black/5 border-l border-black/5 border-dashed"></td>
-                  ))}
-                </tr>
-
-                {/* Fees row */}
-                <tr>
-                  <td className="p-6 border-b border-black/5 text-sm font-bold uppercase tracking-widest text-black/60">Annual Fees</td>
-                  {colleges.map(c => (
-                    <td key={c.id} className="p-6 border-b border-black/5 border-l border-black/5 font-bold text-lg">
-                      {formatRupee(c.fees)}
-                    </td>
-                  ))}
-                  {Array.from({ length: 3 - colleges.length }).map((_, i) => (
-                    <td key={`empty-fee-${i}`} className="p-6 border-b border-black/5 border-l border-black/5 border-dashed"></td>
-                  ))}
-                </tr>
-
-                {/* Rating row */}
-                <tr>
-                  <td className="p-6 border-b border-black/5 text-sm font-bold uppercase tracking-widest text-black/60">Rating</td>
-                  {colleges.map(c => (
-                    <td key={c.id} className="p-6 border-b border-black/5 border-l border-black/5 font-bold text-lg">
-                      <div className="flex items-center gap-2">
-                        <Star className="w-5 h-5 fill-black" />
-                        {c.rating} / 5.0
-                      </div>
-                    </td>
-                  ))}
-                  {Array.from({ length: 3 - colleges.length }).map((_, i) => (
-                    <td key={`empty-rat-${i}`} className="p-6 border-b border-black/5 border-l border-black/5 border-dashed"></td>
-                  ))}
-                </tr>
-
-                {/* Placement row */}
-                <tr>
-                  <td className="p-6 border-b border-black/5 text-sm font-bold uppercase tracking-widest text-black/60">Placement %</td>
-                  {colleges.map(c => (
-                    <td key={c.id} className="p-6 border-b border-black/5 border-l border-black/5 font-bold text-lg text-emerald-600">
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5" />
-                        {c.placements[0]?.percentage}%
-                      </div>
-                    </td>
-                  ))}
-                  {Array.from({ length: 3 - colleges.length }).map((_, i) => (
-                    <td key={`empty-pla-${i}`} className="p-6 border-b border-black/5 border-l border-black/5 border-dashed"></td>
-                  ))}
-                </tr>
-
-                {/* Top Courses row */}
-                <tr>
-                  <td className="p-6 border-b border-black/5 text-sm font-bold uppercase tracking-widest text-black/60 align-top">Top Courses</td>
-                  {colleges.map(c => (
-                    <td key={c.id} className="p-6 border-b border-black/5 border-l border-black/5 align-top">
-                      <ul className="space-y-3">
+                    {colleges.map(c => (
+                      <th key={c.id} className="p-6 border-b border-slate-200/60 text-left relative w-1/4">
+                        <button onClick={() => removeCollege(c.id)} className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all">
+                          <X className="w-4 h-4" />
+                        </button>
+                        <h3 className="text-lg font-bold tracking-tight text-slate-800 pr-8 leading-snug mb-2">{c.name}</h3>
+                        <Link href={`/college/${c.id}`} className="text-xs font-bold uppercase tracking-wider text-indigo-500 hover:text-indigo-700">
+                          View Details →
+                        </Link>
+                      </th>
+                    ))}
+                    {/* Empty search slots */}
+                    {emptySlots > 0 && Array.from({ length: emptySlots }).map((_, i) => (
+                      <AddCollegeSlot key={`slot-${i}`} slotIndex={i} />
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { label: 'Location', render: (c: any) => <div className="flex items-center gap-2 text-slate-700"><MapPin className="w-4 h-4 text-slate-400" />{c.location}</div> },
+                    { label: 'Annual Fees', render: (c: any) => <span className="font-bold text-slate-800">{formatRupee(c.fees)}</span> },
+                    { label: 'Rating', render: (c: any) => <div className="flex items-center gap-2 font-bold text-slate-800"><Star className="w-4 h-4 fill-amber-400 text-amber-400" />{c.rating} / 5.0</div> },
+                    { label: 'Placement %', render: (c: any) => <div className="flex items-center gap-2 font-bold text-emerald-600"><TrendingUp className="w-4 h-4" />{c.placements[0]?.percentage}%</div> },
+                    { label: 'Top Courses', render: (c: any) => (
+                      <ul className="space-y-2">
                         {c.courses.slice(0, 3).map((course: any) => (
-                          <li key={course.id} className="flex items-start gap-2 font-medium">
-                            <Check className="w-4 h-4 text-black/40 mt-1 flex-shrink-0" />
-                            <span className="leading-tight">{course.name}</span>
+                          <li key={course.id} className="flex items-start gap-2 text-sm font-medium text-slate-700">
+                            <Check className="w-4 h-4 text-indigo-400 mt-0.5 flex-shrink-0" />
+                            {course.name}
                           </li>
                         ))}
                       </ul>
-                    </td>
+                    )}
+                  ].map(({ label, render }) => (
+                    <tr key={label} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="p-6 border-b border-slate-100 text-xs font-bold uppercase tracking-widest text-slate-400">{label}</td>
+                      {colleges.map(c => (
+                        <td key={c.id} className="p-6 border-b border-slate-100 border-l border-slate-100">{render(c)}</td>
+                      ))}
+                      {emptySlots > 0 && Array.from({ length: emptySlots }).map((_, i) => (
+                        <td key={`empty-${label}-${i}`} className="p-6 border-b border-slate-100 border-l border-slate-100 border-dashed" />
+                      ))}
+                    </tr>
                   ))}
-                  {Array.from({ length: 3 - colleges.length }).map((_, i) => (
-                    <td key={`empty-cor-${i}`} className="p-6 border-b border-black/5 border-l border-black/5 border-dashed"></td>
-                  ))}
-                </tr>
-
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </main>

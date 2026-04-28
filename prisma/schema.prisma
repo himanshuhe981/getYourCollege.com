@@ -18,9 +18,20 @@ model College {
   courses     Course[]
   placements  Placement[]
   cutoffs     Cutoff[]
+  reviews     Review[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  authorName  String
+  rating      Float    // 0.0 to 5.0
+  content     String   // The actual review text
+  collegeId   String
+  college     College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
 }
 
 model Course {

@@ -55,51 +55,71 @@ export async function getCollegeById(id: string) {
     include: {
       courses: true,
       placements: {
-        orderBy: { year: 'desc' }
+        orderBy: {
+          year: 'desc'
+        }
       },
-      cutoffs: true
+      cutoffs: true,
+      reviews: {
+        orderBy: {
+          createdAt: 'desc'
+        }
+      }
     }
   })
 }
 
 export async function getCollegesByIds(ids: string[]) {
+  if (!ids || ids.length === 0) return []
   return await prisma.college.findMany({
-    where: { id: { in: ids } },
+    where: {
+      id: { in: ids }
+    },
     include: {
       courses: true,
       placements: {
-        orderBy: { year: 'desc' }
-      },
-      cutoffs: true
+        orderBy: { year: 'desc' },
+        take: 1
+      }
     }
   })
 }
 
 export async function predictColleges(exam: string, rank: number) {
-  // Find cutoffs where the user's rank is less than or equal to the maxRank (meaning they qualify)
   const cutoffs = await prisma.cutoff.findMany({
     where: {
-      exam: { equals: exam, mode: 'insensitive' },
-      maxRank: { gte: rank }
+      exam: exam,
+      maxRank: {
+        gte: rank 
+      }
     },
     include: {
       college: {
         include: {
-          courses: true,
-          placements: { orderBy: { year: 'desc' }, take: 1 }
+          placements: {
+            orderBy: { year: 'desc' },
+            take: 1
+          }
         }
       }
-    },
-    orderBy: { maxRank: 'asc' } // show closest matches first
+    }
   })
 
-  // Extract colleges from cutoffs and remove duplicates
-  const collegeMap = new Map()
-  for (const c of cutoffs) {
-    if (!collegeMap.has(c.collegeId)) {
-      collegeMap.set(c.collegeId, c.college)
-    }
-  }
+  return cutoffs.map(c => c.college)
+}
 
-  return Array.from(collegeMap.values())
+export async function searchCollegesByName(query: string) {
+  if (!query || query.trim().length === 0) return []
+  
+  return await prisma.college.findMany({
+    where: {
+      name: { contains: query, mode: 'insensitive' }
+    },
+    select: {
+      id: true,
+      name: true,
+      location: true
+    },
+    take: 5
+  })
 }
