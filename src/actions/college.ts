@@ -2,7 +2,12 @@
 
 import { prisma } from '@/lib/prisma'
 
-export async function getColleges(query?: string, filters?: { location?: string }) {
+export async function getColleges(
+  query?: string, 
+  filters?: { location?: string, fees?: string },
+  page: number = 1,
+  limit: number = 12
+) {
   const where: any = {}
   
   if (query) {
@@ -11,6 +16,12 @@ export async function getColleges(query?: string, filters?: { location?: string 
   
   if (filters?.location && filters.location !== 'All') {
     where.location = { contains: filters.location, mode: 'insensitive' }
+  }
+
+  if (filters?.fees && filters.fees !== 'All') {
+    if (filters.fees === 'Below 5L') where.fees = { lt: 500000 }
+    if (filters.fees === '5L - 10L') where.fees = { gte: 500000, lte: 1000000 }
+    if (filters.fees === 'Above 10L') where.fees = { gt: 1000000 }
   }
 
   const colleges = await prisma.college.findMany({
@@ -22,7 +33,9 @@ export async function getColleges(query?: string, filters?: { location?: string 
         take: 1
       }
     },
-    orderBy: { rating: 'desc' }
+    orderBy: { rating: 'desc' },
+    skip: (page - 1) * limit,
+    take: limit
   })
   
   return colleges

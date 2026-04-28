@@ -7,6 +7,10 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, Target, MapPin, TrendingUp, DollarSign, Star, ChevronRight } from 'lucide-react'
 import { CompareButton } from '@/components/CompareButton'
 
+const formatRupee = (amount: number) => {
+  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount)
+}
+
 export default function PredictorPage() {
   const [exam, setExam] = useState('JEE Main')
   const [rank, setRank] = useState('')
@@ -28,24 +32,24 @@ export default function PredictorPage() {
   const exams = ['JEE Main', 'JEE Advanced', 'BITSAT', 'VITEEE', 'MET', 'WBJEE']
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-slate-900 selection:text-white pb-24">
-      <main className="max-w-screen-xl mx-auto px-6 md:px-16 mt-12 md:mt-16">
+    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white pb-24">
+      <main className="max-w-screen-xl mx-auto px-8 md:px-24 mt-16 md:mt-24">
         <div className="mb-12">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-500 hover:text-slate-900 transition-colors bg-white px-4 py-2 rounded-full shadow-sm border border-white">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-black/50 hover:text-black transition-colors border border-black/10 px-4 py-2">
             <ArrowLeft className="w-4 h-4" />
             Back to Discover
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
           
           {/* Input Section */}
           <div className="lg:col-span-1">
-            <div className="sticky top-32 border border-white bg-white/60 backdrop-blur-md rounded-[2rem] p-8 shadow-sm">
-              <h1 className="text-4xl font-bold tracking-tight leading-none mb-6 text-slate-900">
+            <div className="sticky top-32 border border-black/10 p-8 bg-black/5 rounded-none">
+              <h1 className="text-4xl font-bold tracking-tighter leading-none mb-6 text-black">
                 Predictor.
               </h1>
-              <p className="text-slate-500 font-medium mb-8 leading-relaxed">
+              <p className="text-black/60 font-medium mb-8 leading-relaxed">
                 Enter your expected exam rank to see which colleges you might qualify for based on past cutoffs.
               </p>
 
@@ -55,7 +59,7 @@ export default function PredictorPage() {
                   <select 
                     value={exam}
                     onChange={(e) => setExam(e.target.value)}
-                    className="w-full px-4 py-4 bg-white border border-black/10 focus:outline-none focus:ring-2 focus:ring-black transition-all font-medium appearance-none"
+                    className="w-full px-4 py-4 bg-white border border-black/10 focus:outline-none focus:ring-2 focus:ring-black transition-all font-medium appearance-none rounded-none"
                   >
                     {exams.map(ex => <option key={ex} value={ex}>{ex}</option>)}
                   </select>
@@ -68,13 +72,13 @@ export default function PredictorPage() {
                     onChange={(e) => setRank(e.target.value)}
                     placeholder="e.g. 5000"
                     required
-                    className="w-full px-4 py-4 bg-white border border-black/10 focus:outline-none focus:ring-2 focus:ring-black transition-all font-medium text-lg"
+                    className="w-full px-4 py-4 bg-white border border-black/10 focus:outline-none focus:ring-2 focus:ring-black transition-all font-medium text-lg rounded-none"
                   />
                 </div>
                 <button 
                   type="submit"
                   disabled={loading || !rank}
-                  className="w-full bg-black text-white font-bold uppercase tracking-widest text-sm py-4 flex items-center justify-center gap-2 hover:bg-black/80 transition-colors disabled:opacity-50"
+                  className="w-full bg-black text-white font-bold uppercase tracking-widest text-sm py-4 flex items-center justify-center gap-2 hover:bg-black/80 transition-colors disabled:opacity-50 rounded-none"
                 >
                   {loading ? 'Analyzing Data...' : 'Predict Colleges'}
                   {!loading && <Target className="w-4 h-4" />}
@@ -115,11 +119,11 @@ export default function PredictorPage() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 * index }}
-                    className="border border-black/10 bg-white p-6 hover:border-black transition-colors relative group"
+                    className="border border-black/10 bg-white p-6 hover:border-black transition-colors relative group rounded-none"
                   >
                     <CompareButton collegeId={college.id} />
                     <div className="pr-16 mb-4">
-                      <h3 className="text-2xl font-bold tracking-tight leading-tight mb-2">
+                      <h3 className="text-2xl font-bold tracking-tight leading-tight mb-2 text-black">
                         {college.name}
                       </h3>
                       <div className="flex items-center gap-2 text-sm text-black/50 font-semibold uppercase tracking-wider">
@@ -131,9 +135,8 @@ export default function PredictorPage() {
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mt-6 border-t border-black/5 pt-4">
                       <div className="flex flex-col gap-1">
                         <span className="text-black/40 text-[10px] uppercase tracking-widest font-bold">Fees</span>
-                        <div className="font-bold text-base flex items-center">
-                          <DollarSign className="w-4 h-4 -ml-1" />
-                          {(college.fees / 100000).toFixed(1)}L
+                        <div className="font-bold text-base flex items-center text-black">
+                          {formatRupee(college.fees)}
                         </div>
                       </div>
                       <div className="flex flex-col gap-1">

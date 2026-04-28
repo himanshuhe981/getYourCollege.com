@@ -4,6 +4,10 @@ import Link from 'next/link'
 import { MapPin, DollarSign, Star, TrendingUp, ArrowLeft, BookOpen, GraduationCap } from 'lucide-react'
 import { CompareButton } from '@/components/CompareButton'
 
+const formatRupee = (amount: number) => {
+  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount)
+}
+
 // Using Next.js Server Components for the details page
 export default async function CollegePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -14,50 +18,49 @@ export default async function CollegePage({ params }: { params: Promise<{ id: st
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-slate-900 selection:text-white pb-24">
-      <main className="max-w-screen-xl mx-auto px-6 md:px-16 mt-12 md:mt-16">
+    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white pb-24">
+      <main className="max-w-screen-xl mx-auto px-8 md:px-24 mt-16 md:mt-24">
         {/* Header Section */}
-        <div className="mb-12">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-500 hover:text-slate-900 transition-colors mb-8 bg-white px-4 py-2 rounded-full shadow-sm border border-white">
+        <div className="mb-16">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-black/50 hover:text-black transition-colors mb-8 border border-black/10 px-4 py-2">
             <ArrowLeft className="w-4 h-4" />
             Back to Discover
           </Link>
-          <div className="flex items-center gap-2 text-sm text-slate-500 font-bold tracking-widest uppercase mb-6">
+          <div className="flex items-center gap-2 text-sm text-black/50 font-bold tracking-widest uppercase mb-6">
             <MapPin className="w-4 h-4" />
             {college.location}
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none mb-8 text-slate-900">
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none mb-8 text-black">
             {college.name}
           </h1>
-          <p className="text-xl md:text-2xl text-slate-500 font-medium max-w-3xl leading-relaxed">
+          <p className="text-xl md:text-2xl text-black/60 font-medium max-w-3xl leading-relaxed">
             {college.description}
           </p>
         </div>
 
         {/* Quick Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-24">
-          <div className="border border-white bg-white/60 backdrop-blur-md rounded-[2rem] p-6 flex flex-col gap-2 shadow-sm">
-            <span className="text-slate-400 text-xs uppercase tracking-widest font-bold">Average Fees</span>
-            <div className="flex items-center gap-2 font-bold text-2xl text-slate-800">
-              <DollarSign className="w-5 h-5 text-slate-500" />
-              ₹{(college.fees / 100000).toFixed(1)}L
+          <div className="border border-black/10 p-6 flex flex-col gap-2 rounded-none">
+            <span className="text-black/40 text-xs uppercase tracking-widest font-bold">Average Fees</span>
+            <div className="flex items-center gap-2 font-bold text-2xl text-black">
+              {formatRupee(college.fees)}
             </div>
           </div>
-          <div className="border border-white bg-white/60 backdrop-blur-md rounded-[2rem] p-6 flex flex-col gap-2 shadow-sm">
-            <span className="text-slate-400 text-xs uppercase tracking-widest font-bold">Rating</span>
-            <div className="flex items-center gap-2 font-bold text-2xl text-slate-800">
-              <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
+          <div className="border border-black/10 p-6 flex flex-col gap-2 rounded-none">
+            <span className="text-black/40 text-xs uppercase tracking-widest font-bold">Rating</span>
+            <div className="flex items-center gap-2 font-bold text-2xl text-black">
+              <Star className="w-5 h-5 fill-black text-black" />
               {college.rating} / 5.0
             </div>
           </div>
-          <div className="border border-white bg-white/60 backdrop-blur-md rounded-[2rem] p-6 flex flex-col gap-2 shadow-sm">
-            <span className="text-slate-400 text-xs uppercase tracking-widest font-bold">Highest Placement</span>
+          <div className="border border-black/10 p-6 flex flex-col gap-2 rounded-none">
+            <span className="text-black/40 text-xs uppercase tracking-widest font-bold">Highest Placement</span>
             <div className="flex items-center gap-2 font-bold text-2xl text-emerald-600">
               <TrendingUp className="w-5 h-5" />
               {college.placements[0]?.percentage}%
             </div>
           </div>
-          <div className="border border-white bg-white/60 backdrop-blur-md rounded-[2rem] overflow-hidden flex flex-col justify-center shadow-sm relative group cursor-pointer transition-transform hover:scale-[1.02]">
+          <div className="border border-black/10 flex flex-col justify-center rounded-none relative">
             <CompareButton collegeId={college.id} fullWidth={true} />
           </div>
         </div>
@@ -73,9 +76,9 @@ export default async function CollegePage({ params }: { params: Promise<{ id: st
               </h2>
               <div className="grid gap-4">
                 {college.courses.map(course => (
-                  <div key={course.id} className="border border-black/10 p-6 flex justify-between items-center group hover:border-black transition-colors">
+                  <div key={course.id} className="border border-black/10 p-6 flex justify-between items-center group hover:border-black transition-colors rounded-none">
                     <span className="font-bold text-lg">{course.name}</span>
-                    <span className="text-black/50 font-medium text-sm bg-black/5 px-3 py-1 rounded-full">{course.duration}</span>
+                    <span className="text-black/50 font-medium text-sm bg-black/5 px-3 py-1">{course.duration}</span>
                   </div>
                 ))}
               </div>
@@ -87,7 +90,7 @@ export default async function CollegePage({ params }: { params: Promise<{ id: st
                 <GraduationCap className="w-8 h-8" />
                 Placement Record
               </h2>
-              <div className="border border-black/10 p-8">
+              <div className="border border-black/10 p-8 rounded-none">
                 <div className="flex flex-col gap-6">
                   {college.placements.map(p => (
                     <div key={p.id} className="flex items-center gap-6">
@@ -108,7 +111,7 @@ export default async function CollegePage({ params }: { params: Promise<{ id: st
 
           {/* Sidebar */}
           <div className="space-y-8">
-            <div className="border border-black/10 p-8 bg-black/5">
+            <div className="border border-black/10 p-8 bg-black/5 rounded-none">
               <h3 className="font-bold text-xl mb-6 tracking-tight">Exam Cutoffs</h3>
               <div className="space-y-4">
                 {college.cutoffs.map(c => (
@@ -120,7 +123,7 @@ export default async function CollegePage({ params }: { params: Promise<{ id: st
               </div>
             </div>
             
-            <div className="border border-black/10 p-8">
+            <div className="border border-black/10 p-8 rounded-none">
               <h3 className="font-bold text-xl mb-4 tracking-tight">Need help deciding?</h3>
               <p className="text-black/60 mb-6 font-medium">Add this college to your comparison list to see how it stacks up against others.</p>
               <Link href="/compare" className="block w-full text-center bg-black text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-black/80 transition-colors">

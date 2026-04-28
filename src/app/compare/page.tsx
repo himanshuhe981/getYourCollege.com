@@ -6,6 +6,10 @@ import { getCollegesByIds } from '@/actions/college'
 import Link from 'next/link'
 import { ArrowLeft, X, Check, MapPin, DollarSign, Star, TrendingUp } from 'lucide-react'
 
+const formatRupee = (amount: number) => {
+  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount)
+}
+
 export default function ComparePage() {
   const { selectedCollegeIds, removeCollege, clear } = useCompareStore()
   const [colleges, setColleges] = useState<any[]>([])
@@ -27,17 +31,17 @@ export default function ComparePage() {
   }, [selectedCollegeIds])
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-slate-900 selection:text-white pb-24">
-      <main className="max-w-screen-xl mx-auto px-6 md:px-16 mt-12 md:mt-16">
+    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white pb-24">
+      <main className="max-w-screen-xl mx-auto px-8 md:px-24 mt-16 md:mt-24">
         <div className="flex items-center justify-between mb-12">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-500 hover:text-slate-900 transition-colors bg-white px-4 py-2 rounded-full shadow-sm border border-white">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-black/50 hover:text-black transition-colors border border-black/10 px-4 py-2">
             <ArrowLeft className="w-4 h-4" />
             Back to Discover
           </Link>
           {colleges.length > 0 && (
             <button 
               onClick={() => clear()}
-              className="text-xs uppercase font-bold tracking-widest text-slate-500 hover:text-red-500 transition-colors bg-white px-4 py-2 rounded-full shadow-sm border border-white"
+              className="text-xs uppercase font-bold tracking-widest text-black/50 hover:text-red-500 transition-colors border border-black/10 px-4 py-2"
             >
               Clear All
             </button>
@@ -45,10 +49,10 @@ export default function ComparePage() {
         </div>
 
         <div className="mb-16">
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none mb-6 text-slate-900">
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none mb-6 text-black">
             Compare.
           </h1>
-          <p className="text-xl md:text-2xl text-slate-500 font-medium max-w-3xl leading-relaxed">
+          <p className="text-xl md:text-2xl text-black/60 font-medium max-w-3xl leading-relaxed">
             Evaluate your top choices side-by-side to make the best decision.
           </p>
         </div>
@@ -91,10 +95,12 @@ export default function ComparePage() {
                   {/* Fill empty slots up to 3 */}
                   {Array.from({ length: 3 - colleges.length }).map((_, i) => (
                     <th key={`empty-${i}`} className="p-6 border-b border-black/10 border-dashed text-center w-1/4">
-                      <div className="w-12 h-12 rounded-full border-2 border-black/10 border-dashed flex items-center justify-center mx-auto mb-4">
-                        <span className="text-black/20 font-bold">+</span>
-                      </div>
-                      <span className="text-xs uppercase font-bold tracking-widest text-black/30">Add College</span>
+                      <Link href="/">
+                        <div className="w-12 h-12 rounded-full border-2 border-black/10 border-dashed flex items-center justify-center mx-auto mb-4 hover:border-black transition-colors cursor-pointer group">
+                          <span className="text-black/20 font-bold group-hover:text-black transition-colors">+</span>
+                        </div>
+                        <span className="text-xs uppercase font-bold tracking-widest text-black/30 hover:text-black transition-colors cursor-pointer">Add College</span>
+                      </Link>
                     </th>
                   ))}
                 </tr>
@@ -121,7 +127,7 @@ export default function ComparePage() {
                   <td className="p-6 border-b border-black/5 text-sm font-bold uppercase tracking-widest text-black/60">Annual Fees</td>
                   {colleges.map(c => (
                     <td key={c.id} className="p-6 border-b border-black/5 border-l border-black/5 font-bold text-lg">
-                      ₹{(c.fees / 100000).toFixed(1)} Lakhs
+                      {formatRupee(c.fees)}
                     </td>
                   ))}
                   {Array.from({ length: 3 - colleges.length }).map((_, i) => (
