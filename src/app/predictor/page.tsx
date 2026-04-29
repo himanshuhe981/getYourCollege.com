@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { predictColleges } from '@/actions/college'
+import { predictColleges, type CollegeWithBasicRelations } from '@/actions/college'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Target, MapPin, TrendingUp, ChevronRight } from 'lucide-react'
@@ -13,7 +13,7 @@ const formatRupee = (amount: number) =>
 export default function PredictorPage() {
   const [exam, setExam] = useState('JEE Main')
   const [rank, setRank] = useState('')
-  const [predicted, setPredicted] = useState<any[]>([])
+  const [predicted, setPredicted] = useState<CollegeWithBasicRelations[]>([])
   const [loading, setLoading] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
 

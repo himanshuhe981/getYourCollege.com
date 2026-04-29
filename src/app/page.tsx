@@ -51,6 +51,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1)
     setColleges([])
     setHasMore(true)
@@ -64,9 +65,9 @@ export default function Home() {
       if (!active) return
       if (data.length < 12) setHasMore(false)
       setColleges(prev => {
-        if (page === 1) return data as any
+        if (page === 1) return data as unknown as College[]
         const ids = new Set(prev.map(c => c.id))
-        return [...prev, ...(data as any).filter((c: College) => !ids.has(c.id))]
+        return [...prev, ...(data as unknown as College[]).filter((c: College) => !ids.has(c.id))]
       })
       setLoading(false)
     }, 300)

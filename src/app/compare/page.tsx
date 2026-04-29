@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useCompareStore } from '@/store/compare'
-import { getCollegesByIds, searchCollegesByName } from '@/actions/college'
+import { getCollegesByIds, searchCollegesByName, type FullCollege } from '@/actions/college'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, X, Check, MapPin, Star, TrendingUp, Search, Plus } from 'lucide-react'
@@ -75,7 +75,7 @@ function CollegeSearch({ onAdd, excludeIds }: { onAdd: (id: string) => void; exc
             initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
             className="absolute top-full left-0 right-0 bg-white border border-black/10 shadow-lg z-50 mt-px px-4 py-4 text-sm text-black/50 font-medium"
           >
-            No colleges found for "{query}"
+            No colleges found for &quot;{query}&quot;
           </motion.div>
         )}
       </AnimatePresence>
@@ -85,7 +85,7 @@ function CollegeSearch({ onAdd, excludeIds }: { onAdd: (id: string) => void; exc
 
 export default function ComparePage() {
   const { selectedCollegeIds, addCollege, removeCollege, clear } = useCompareStore()
-  const [colleges, setColleges] = useState<any[]>([])
+  const [colleges, setColleges] = useState<FullCollege[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -190,7 +190,7 @@ export default function ComparePage() {
                 {[
                   {
                     label: 'Location',
-                    render: (c: any) => (
+                    render: (c: FullCollege) => (
                       <div className="flex items-center gap-2 text-sm font-medium text-black">
                         <MapPin className="w-4 h-4 text-black/40" />{c.location}
                       </div>
@@ -198,11 +198,11 @@ export default function ComparePage() {
                   },
                   {
                     label: 'Annual Fees',
-                    render: (c: any) => <span className="font-bold text-base text-black">{formatRupee(c.fees)}</span>,
+                    render: (c: FullCollege) => <span className="font-bold text-base text-black">{formatRupee(c.fees)}</span>,
                   },
                   {
                     label: 'Rating',
-                    render: (c: any) => (
+                    render: (c: FullCollege) => (
                       <div className="flex items-center gap-2 font-bold text-base text-black">
                         <Star className="w-4 h-4 fill-black" />{c.rating} / 5.0
                       </div>
@@ -210,7 +210,7 @@ export default function ComparePage() {
                   },
                   {
                     label: 'Placement %',
-                    render: (c: any) => (
+                    render: (c: FullCollege) => (
                       <div className="flex items-center gap-2 font-bold text-base text-emerald-600">
                         <TrendingUp className="w-4 h-4" />{c.placements[0]?.percentage}%
                       </div>
@@ -218,9 +218,9 @@ export default function ComparePage() {
                   },
                   {
                     label: 'Top Courses',
-                    render: (c: any) => (
+                    render: (c: FullCollege) => (
                       <ul className="space-y-2">
-                        {c.courses.slice(0, 3).map((course: any) => (
+                        {c.courses.slice(0, 3).map((course) => (
                           <li key={course.id} className="flex items-start gap-2 text-sm font-medium text-black">
                             <Check className="w-4 h-4 text-black/40 mt-0.5 flex-shrink-0" />{course.name}
                           </li>
