@@ -1,6 +1,9 @@
 'use server'
 
-import { prisma } from '@/lib/prisma'
+function getBackendUrl() {
+  const url = process.env.BACKEND_URL || 'http://localhost:5000'
+  return url
+}
 
 export async function getColleges(
   query?: string, 
@@ -8,119 +11,102 @@ export async function getColleges(
   page: number = 1,
   limit: number = 12
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const where: any = {}
-  
-  if (query) {
-    where.name = { contains: query, mode: 'insensitive' }
-  }
-  
-  if (filters?.location && filters.location !== 'All') {
-    where.location = { contains: filters.location, mode: 'insensitive' }
-  }
+  const params = new URLSearchParams()
+  if (query) params.append('q', query)
+  if (filters?.location && filters.location !== 'All') params.append('location', filters.location)
+  if (filters?.fees && filters.fees !== 'All') params.append('fees', filters.fees)
+  params.append('page', page.toString())
+  params.append('limit', limit.toString())
 
-  if (filters?.fees && filters.fees !== 'All') {
-    if (filters.fees === 'Below 5L') where.fees = { lt: 500000 }
-    if (filters.fees === '5L - 10L') where.fees = { gte: 500000, lte: 1000000 }
-    if (filters.fees === 'Above 10L') where.fees = { gt: 1000000 }
+  try {
+    const res = await fetch(`${getBackendUrl()}/api/colleges?${params.toString()}`, {
+      cache: 'no-store'
+    })
+    const json = await res.json()
+    if (json.success) return json.data
+    return []
+  } catch (error) {
+    console.error('Error fetching colleges:', error)
+    return []
   }
-
-  const colleges = await prisma.college.findMany({
-    where,
-    include: {
-      courses: true,
-      placements: {
-        orderBy: { year: 'desc' },
-        take: 1
-      }
-    },
-    orderBy: { rating: 'desc' },
-    skip: (page - 1) * limit,
-    take: limit
-  })
-  
-  return colleges
 }
 
 export async function getLocations() {
-  const locations = await prisma.college.findMany({
-    select: { location: true },
-    distinct: ['location']
-  })
-  return locations.map(l => l.location)
+  try {
+    const res = await fetch(`${getBackendUrl()}/api/locations`, {
+      cache: 'no-store'
+    })
+    const json = await res.json()
+    if (json.success) return json.data
+    return []
+  } catch (error) {
+    console.error('Error fetching locations:', error)
+    return []
+  }
 }
 
 export async function getCollegeById(id: string) {
-  return await prisma.college.findUnique({
-    where: { id },
-    include: {
-      courses: true,
-      placements: {
-        orderBy: {
-          year: 'desc'
-        }
-      },
-      cutoffs: true,
-      reviews: {
-        orderBy: {
-          createdAt: 'desc'
-        }
-      }
-    }
-  })
+  try {
+    const res = await fetch(`${getBackendUrl()}/api/colleges/${id}`, {
+      cache: 'no-store'
+    })
+    const json = await res.json()
+    if (json.success) return json.data
+    return null
+  } catch (error) {
+    console.error('Error fetching college by id:', error)
+    return null
+  }
 }
 
 export async function getCollegesByIds(ids: string[]) {
   if (!ids || ids.length === 0) return []
-  return await prisma.college.findMany({
-    where: {
-      id: { in: ids }
-    },
-    include: {
-      courses: true,
-      placements: {
-        orderBy: { year: 'desc' },
-        take: 1
-      }
-    }
-  })
+  
+  try {
+    // Since we don't have a specific bulk endpoint, we fetch them individually
+    // The compare feature usually only has 2-3 colleges anyway
+    const promises = ids.map(id => getCollegeById(id))
+    const results = await Promise.all(promises)
+    return results.filter(Boolean)
+  } catch (error) {
+    console.error('Error fetching colleges by ids:', error)
+    return []
+  }
 }
 
 export async function predictColleges(exam: string, rank: number) {
-  const cutoffs = await prisma.cutoff.findMany({
-    where: {
-      exam: exam,
-      maxRank: {
-        gte: rank 
-      }
-    },
-    include: {
-      college: {
-        include: {
-          placements: {
-            orderBy: { year: 'desc' },
-            take: 1
-          }
-        }
-      }
-    }
-  })
+  const params = new URLSearchParams()
+  params.append('exam', exam)
+  params.append('rank', rank.toString())
 
-  return cutoffs.map(c => c.college)
+  try {
+    const res = await fetch(`${getBackendUrl()}/api/predict?${params.toString()}`, {
+      cache: 'no-store'
+    })
+    const json = await res.json()
+    if (json.success) return json.data
+    return []
+  } catch (error) {
+    console.error('Error predicting colleges:', error)
+    return []
+  }
 }
 
 export async function searchCollegesByName(query: string) {
   if (!query || query.trim().length === 0) return []
   
-  return await prisma.college.findMany({
-    where: {
-      name: { contains: query, mode: 'insensitive' }
-    },
-    select: {
-      id: true,
-      name: true,
-      location: true
-    },
-    take: 5
-  })
+  const params = new URLSearchParams()
+  params.append('q', query)
+
+  try {
+    const res = await fetch(`${getBackendUrl()}/api/colleges/search?${params.toString()}`, {
+      cache: 'no-store'
+    })
+    const json = await res.json()
+    if (json.success) return json.data
+    return []
+  } catch (error) {
+    console.error('Error searching colleges:', error)
+    return []
+  }
 }
