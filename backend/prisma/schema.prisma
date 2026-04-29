@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model College {
+  id          String   @id @default(cuid())
+  name        String
+  location    String
+  fees        Int      // average annual fees
+  rating      Float    // 0.0 to 5.0
+  description String?  // Basic info overview
+
+  courses     Course[]
+  placements  Placement[]
+  cutoffs     Cutoff[]
+  reviews     Review[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  authorName  String
+  rating      Float    // 0.0 to 5.0
+  content     String   // The actual review text
+  collegeId   String
+  college     College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+model Course {
+  id        String   @id @default(cuid())
+  name      String
+  duration  String   // e.g., "4 Years"
+  collegeId String
+  college   College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+}
+
+model Placement {
+  id         String   @id @default(cuid())
+  year       Int
+  percentage Float    // e.g., 95.5 for 95.5%
+  collegeId  String
+  college    College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+}
+
+model Cutoff {
+  id        String   @id @default(cuid())
+  exam      String   // e.g., "JEE", "NEET"
+  maxRank   Int      // The maximum rank accepted (cutoff)
+  collegeId String
+  college   College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+}

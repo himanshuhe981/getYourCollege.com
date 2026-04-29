@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: getyourcollege-backend
+    env: node
+    plan: free
+    rootDir: .
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DATABASE_URL
+        sync: false          # Set manually in Render dashboard
+      - key: FRONTEND_URL
+        sync: false          # Set to your Vercel URL
